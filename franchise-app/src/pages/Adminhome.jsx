@@ -5,40 +5,18 @@ const Adminhome = () => {
   const [pengajuan, setPengajuan] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Meniru pemanggilan API (GET) saat halaman pertama kali dibuka
   useEffect(() => {
-    const fetchData = () => {
-      setTimeout(() => {
-        // Data tiruan dari database
-        const mockData = [
-          {
-            id: "FR-001",
-            nama: "Budi Santoso",
-            lokasi: "Jakarta Selatan",
-            status: "Submitted",
-          },
-          {
-            id: "FR-002",
-            nama: "Siti Aminah",
-            lokasi: "Medan",
-            status: "Document Approved",
-          },
-          {
-            id: "FR-003",
-            nama: "Andi Wijaya",
-            lokasi: "Surabaya",
-            status: "Needs Revision",
-          },
-        ];
-        setPengajuan(mockData);
-        setIsLoading(false);
-      }, 1000); // loading 1 detik
-    };
+    const timer = setTimeout(() => {
+      const dataTersimpan = JSON.parse(
+        localStorage.getItem("pengajuanFranchise") || "[]",
+      );
+      setPengajuan(dataTersimpan);
+      setIsLoading(false);
+    }, 1000);
 
-    fetchData();
+    return () => clearTimeout(timer);
   }, []);
 
-  // Fungsi pembantu untuk memberi warna pada status
   const getStatusColor = (status) => {
     switch (status) {
       case "Submitted":
@@ -67,7 +45,11 @@ const Adminhome = () => {
 
       {isLoading ? (
         <div className="text-center py-10 text-gray-500 font-semibold">
-          Memuat data dari server...
+          Memuat data pengajuan...
+        </div>
+      ) : pengajuan.length === 0 ? (
+        <div className="text-center py-10 text-gray-500 font-semibold">
+          Belum ada pengajuan franchise.
         </div>
       ) : (
         <div className="overflow-x-auto">

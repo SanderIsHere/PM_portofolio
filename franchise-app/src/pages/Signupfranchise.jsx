@@ -1,44 +1,61 @@
 import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const SignUp = () => {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleSignUp = (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
     setIsLoading(true);
 
-    // Simulasi proses API register selama 1 detik
     setTimeout(() => {
+      const formData = new FormData(e.currentTarget);
+      const pengajuan = {
+        id: `FR-${String(Date.now()).slice(-4)}`,
+        nama: formData.get("nama"),
+        email: formData.get("email"),
+        telepon: formData.get("telepon"),
+        lokasi: formData.get("lokasi") || "",
+        konsep: formData.get("konsep"),
+        status: "Submitted",
+      };
+      const pengajuanTersimpan = JSON.parse(
+        localStorage.getItem("pengajuanFranchise") || "[]",
+      );
+
+      localStorage.setItem(
+        "pengajuanFranchise",
+        JSON.stringify([...pengajuanTersimpan, pengajuan]),
+      );
       setIsLoading(false);
-      alert("Pendaftaran akun berhasil! Silakan isi form pengajuan.");
-      // Setelah berhasil, arahkan user ke halaman utama (Form Pengajuan)
-      navigate("/");
+      alert("Pengajuan franchise berhasil dikirim ke Admin BD.");
+      navigate("/admin");
     }, 1000);
   };
 
   return (
-    <div className="max-w-md mx-auto bg-white p-8 rounded-xl shadow-sm border border-gray-100 mt-12">
+    <div className="max-w-md mx-auto bg-black p-8 rounded-xl shadow-sm border border-gray-100 mt-12">
       <div className="text-center mb-6">
-        <h1 className="text-2xl font-bold text-gray-800">
-          Buat Akun <span className="text-yellow-500">Mitra</span>
+        <h1 className="text-2xl font-bold text-black">
+          Pengajuan <span className="text-yellow-500">Franchise</span>
         </h1>
-        <p className="text-sm text-gray-500 mt-2">
-          Daftar untuk memulai pengajuan franchise Anda
+        <p className="text-sm text-white mt-2">
+          Isi data berikut untuk mengirim pengajuan kepada Admin BD
         </p>
       </div>
 
-      <form onSubmit={handleSignUp} className="space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-4">
         <div>
           <label className="block text-sm font-semibold text-gray-700 mb-1">
             Nama Lengkap
           </label>
           <input
+            name="nama"
             type="text"
             required
             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400"
-            placeholder="John Doe"
+            placeholder="Nama calon mitra"
           />
         </div>
 
@@ -47,23 +64,50 @@ const SignUp = () => {
             Alamat Email
           </label>
           <input
+            name="email"
             type="email"
             required
             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400"
-            placeholder="mitra@email.com"
+            placeholder="nama@email.com"
           />
         </div>
 
         <div>
           <label className="block text-sm font-semibold text-gray-700 mb-1">
-            Password
+            Rencana Lokasi Usaha
           </label>
           <input
-            type="password"
+            name="lokasi"
+            type="text"
             required
-            minLength="6"
             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400"
-            placeholder="Minimal 6 karakter"
+            placeholder="Contoh: Jakarta Selatan"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-semibold text-gray-700 mb-1">
+            Konsep atau Jenis Franchise
+          </label>
+          <textarea
+            name="konsep"
+            required
+            rows="3"
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400"
+            placeholder="Contoh: franchise minuman dan makanan ringan"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-semibold text-gray-700 mb-1">
+            Nomor Telepon
+          </label>
+          <input
+            name="telepon"
+            type="tel"
+            required
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400"
+            placeholder="08xxxxxxxxxx"
           />
         </div>
 
@@ -72,17 +116,9 @@ const SignUp = () => {
           disabled={isLoading}
           className="w-full bg-yellow-400 hover:bg-yellow-500 text-gray-900 font-bold py-3 rounded-lg transition-colors mt-2"
         >
-          {isLoading ? "Memproses..." : "Daftar Akun"}
+          {isLoading ? "Mengirim Pengajuan..." : "Kirim Pengajuan Franchise"}
         </button>
       </form>
-
-      <div className="text-center mt-6 text-sm text-gray-600">
-        Sudah punya akun?{" "}
-        {/* Anggap saja link ke login, untuk prototype kita biarkan mengarah ke # */}
-        <a href="#" className="font-bold text-yellow-600 hover:text-yellow-700">
-          Masuk di sini
-        </a>
-      </div>
     </div>
   );
 };
